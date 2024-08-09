@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>{{ book.name }}</h2>
+  <img src="{{ book.cover_page.url }}" alt="Cover image">
+  <p><strong>Author:</strong> {{ book.author }}</p>
+  <p><strong>Genre:</strong> {{ book.genre }}</p>
+  <p><strong>Published Date:</strong> {{ book.published_date }}</p>
+  <p><strong>Description:</strong> {{ book.description }}</p>
+
+<<<<<<< HEAD
+  {% comment %} <h3>Reviews</h3>
+=======
+  <h3>Reviews</h3>
+>>>>>>> 82a77c52e0187b9e27a77a74c90d7a3553e04797
+  {% for review in book.reviews.all %}
+    <div>
+      <strong>{{ review.user.username }}:</strong>
+      <p>Rating: {{ review.rating }}</p>
+      <p>{{ review.comment }}</p>
+    </div>
+  {% empty %}
+    <p>No reviews yet.</p>
+  {% endfor %}
+
+  <h3>Add a Review</h3>
+  <form method="post">
+    {% csrf_token %}
+    {{ review_form.as_p }}
+    <button type="submit">Submit Review</button>
+<<<<<<< HEAD
+  </form> {% endcomment %}
+=======
+  </form>
+>>>>>>> 82a77c52e0187b9e27a77a74c90d7a3553e04797
+{% endblock %}

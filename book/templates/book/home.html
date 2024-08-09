@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Book Recommendation System</title>
+    <link href="{% static 'styles.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <div class="container mx-auto p-6">
+        <!-- Search Bar -->        
+        <section class="mb-8 search-container" style="background-image: url('{% static 'images/book.jpg' %}'); background-size: cover; background-position: center; min-height: 300px;">
+            <div class="search-bar p-4 rounded-lg  h-full w-full flex justify-center items-center">
+                <!-- rest of your code -->
+
+                <div class="content">
+                    <h2 class="text-2xl font-semibold mb-4 ring-amber-300">Search for Books</h2>
+                    <form action="{% url 'search_books' %}" method="get">
+                        <input type="text" name="query" placeholder="Search by title, author, or genre"
+                            class="border border-gray-300 p-2 rounded-lg w-full" />
+                        <button type="submit" class="mt-2 bg-yellow-400 text-white py-2 px-4 rounded hover:bg-blue-700">
+                            Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Books -->
+        <div class="container mx-auto p-6">
+            <!-- Popular Books -->
+            <section>
+                <h2 class="text-2xl font-semibold mb-4">Popular Books</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {% for book in popular_books %}
+                    <div class="bg-white p-4 border rounded-lg shadow-md">
+                        {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="w-24 h-auto mb-4 mx-auto">
+                        {% else %}
+                        <img src="{% static 'default_cover_image.png' %}" alt="Default cover" class="w-24 h-auto mb-4 mx-auto">
+                        {% endif %}
+                        <h3 class="text-xl font-bold mb-2">{{ book.title }}</h3>
+                        <p class="text-gray-600 mb-2">{{ book.author }}</p>
+                        <p class="text-gray-600 mb-2">{{ book.genre }}</p>
+                        <p class="text-gray-700 mb-4">{{ book.description|slice:":100" }}...</p>
+                        <p class="text-gray-600 mb-2">{{ book.published_date }}</p>
+
+                        <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline">Read more</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    {% endblock %}
+
+</body>
+
+</html>

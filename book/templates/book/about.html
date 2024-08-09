@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About{% endblock %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-4xl font-extrabold text-yellow-500 mb-4">About Us</h1>
+    <p class="text-gray-700 leading-relaxed">Welcome to BookRec! We are dedicated to helping you discover your next favorite book. Our team of book enthusiasts carefully curates recommendations to ensure you find books that match your interests.</p>
+    <img src="{% static 'images/a.jpg' %}" alt="{{ book.title }} cover" class="w-full h-48 object-cover mb-4 rounded">
+
+</div>
+{% endblock %}
