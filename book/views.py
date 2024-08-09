@@ -1,8 +1,5 @@
 from django.shortcuts import render,redirect
-<<<<<<< HEAD
 from django.shortcuts import render, get_object_or_404
-=======
->>>>>>> 82a77c52e0187b9e27a77a74c90d7a3553e04797
 from .models import Book
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
@@ -16,9 +13,6 @@ def home(request):
 
 def about(request):
     return render(request,"book/about.html",{})
-
-<<<<<<< HEAD
-=======
 
 def register(request):
     if request.method == 'POST':
@@ -55,7 +49,6 @@ def user_login(request):
     return render(request, 'book/login.html')
 # def login(request):
 #     return render(request, "book/login.html",{})
->>>>>>> 82a77c52e0187b9e27a77a74c90d7a3553e04797
 
 def register(request):
     if request.method == 'POST':
