@@ -5,6 +5,9 @@ from django.urls import path
 from brs import settings
 from . import views
 
+from django.shortcuts import render
+from .models import Book
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
@@ -15,8 +18,6 @@ urlpatterns = [
     path('genre/sci-fi/', views.genre_sci_fi, name='genre_sci_fi'),
     path('SignIn/register/', views.register, name='register'),
     path('SignTn/login/', views.user_login, name='login'),
-<<<<<<< HEAD
     path('book/<int:id>/', views.book_detail, name='book_details'),
-=======
->>>>>>> 82a77c52e0187b9e27a77a74c90d7a3553e04797
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -87,26 +87,31 @@ def user_login(request):
 #     return render(request, "book/login.html",{})
 
 # views.py
+
+from django.db.models import Q
 from django.shortcuts import render
 from .models import Book
 
 def search_books(request):
-    # Retrieve search parameters from request GET data
-    title = request.GET.get('title', '')
-    author = request.GET.get('author', '')
-    genre = request.GET.get('genre', '')
+    query = request.GET.get('query', '')
+    print(f"Search query: {query}")  # Debug line
+    if query:
+        books = Book.objects.filter(
+            Q(title__icontains=query) |
+            Q(author__icontains=query) |
+            Q(genre__icontains=query)
+        )
+    else:
+        books = Book.objects.all()
+    
+    print(f"Number of books found: {books.count()}")  # Debug line
 
-    # Filter books based on search parameters
-    books = Book.objects.all()
-    if title:
-        books = books.filter(title__icontains=title)
-    if author:
-        books = books.filter(author__icontains=author)
-    if genre:
-        books = books.filter(genre__icontains=genre)
+    context = {
+        'books': books,
+        'search_query': query,
+    }
+    return render(request, 'book/search_results.html', context)
 
-    # Render the template with search results
-    return render(request, 'book/search_results.html', {'books': books, 'search_params': request.GET})
 
 
 def book_detail(request, id):
