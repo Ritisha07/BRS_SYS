@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <h1>Edit Review</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ review.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+{% endblock %}
