@@ -2,28 +2,21 @@
 {% block content %}
 {% load static %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Search</title>
+    <title>Books in {{ search_query|title }}</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
     <div class="container mx-auto p-6">
-        <h1 class="text-3xl font-semibold mb-4">Search Books</h1>
-
-        <!-- Search Form -->
-        <form method="get" action="" class="mb-6 flex items-center space-x-2">
-            <input type="text" name="query" placeholder="Search by title, author, or genre" value="{{ search_query }}" class="border rounded p-2 flex-1">
-            <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded">Search</button>
-        </form>
+        <h1 class="text-3xl font-semibold mb-4">Books in {{ search_query|title }}</h1>
 
         <!-- Search Results -->
         <section>
-            <h2 class="text-2xl font-semibold mb-4">Search Results</h2>
+            <h2 class="text-2xl font-semibold mb-4">Books Found</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {% for book in books %}
                 <div class="bg-white p-4 border rounded-lg shadow-md">
@@ -41,7 +34,7 @@
                     <a href="{% url 'book_details' id=book.id %}" class="text-blue-600 hover:underline">Read more</a>
                 </div>
                 {% empty %}
-                <p>No books found.</p>
+                <p>No books found in this genre.</p>
                 {% endfor %}
             </div>
         </section>

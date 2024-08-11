@@ -43,12 +43,13 @@
                         </svg>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="{% url 'genre_fiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fiction</a>
-                        <a href="{% url 'genre_nonfiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Non-Fiction</a>
-                        <a href="{% url 'genre_sci_fi' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Sci-Fi</a>
+                        <a href="{% url 'genre_search' genre='fantacy' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fantacy</a>
+                        <a href="{% url 'genre_search' genre='nonfictionfiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fiction</a>
+                        <a href="{% url 'genre_search' genre='thriller' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Thriller</a>
                         <!-- Add more genres as needed -->
                     </div>
                 </div>
+                
                 <div class="relative dropdown">
                     <button class="text-white hover:text-gray-300 focus:outline-none">
                         Sign Up

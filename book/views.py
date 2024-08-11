@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django import forms
+from django.shortcuts import render
+from .models import Book
 # Create your views here.
 def home(request):
     popular_books = Book.objects.all()  # or apply some filter to get popular books
@@ -140,13 +142,34 @@ def book_detail(request, id):
     has_reviewed = reviews.filter(user=request.user).exists() if request.user.is_authenticated else False
     return render(request, 'book/book_detail.html', {'book': book, 'reviews': reviews, 'has_reviewed': has_reviewed})
 
-def genre_fiction(request):
-    # Logic for fiction genre
-    return render(request, 'book/genre_fiction.html')
+# def genre_fiction(request):
+#     # Logic for fiction genre
+#     return render(request, 'book/genre_fiction.html')
 
-def genre_nonfiction(request):
-    # Logic for non-fiction genre
-    return render(request, 'book/genre_nonfiction.html')
+# def genre_nonfiction(request):
+#     # Logic for non-fiction genre
+#     return render(request, 'book/genre_nonfiction.html')
 
-def genre_sci_fi(request):
-    return render(request, 'book/genre_sci_fi.html')
+# def genre_sci_fi(request):
+#     return render(request, 'book/genre_sci_fi.html')
+
+# sworiya le gareko kk idk
+
+
+
+# def genreSearch(request, genre):
+#     # Filter books based on the genre parameter
+#     books = Book.objects.filter(genre=genre)
+#     return render(request, 'genreSearch.html', {'books': books, 'search_query': genre}) 
+
+def genre_search(request, genre):
+    # Query books based on the genre
+    books = Book.objects.filter(genre__icontains=genre)
+    
+    # Pass the books and search query to the template
+    context = {
+        'search_query': genre,
+        'books': books
+    }
+    
+    return render(request, 'book/genreSearch.html', context)
