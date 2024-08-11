@@ -62,6 +62,8 @@
                         
                     </div>
                 </div>
+                {% comment %} {% if user.is_authenticated %} {% endcomment %}
+                <a href="{% url 'logout' %}"class="text-white hover:text-gray-300">Logout</a>
                 {% comment %} <a href="{% url 'login' %}" class="text-white hover:text-gray-300">SignIn</a> {% endcomment %}
             </div>
         </div>
