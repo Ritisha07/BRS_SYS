@@ -1,6 +1,5 @@
-{% comment %} {% extends "base.html" %}
-{% load static %}
-{% block content %} {% endcomment %}
+{% extends "base.html" %}
+{% block content %}
 {% load static %}
 {% comment %} {% if has_reviewed %} {% endcomment %}
 <h2>Add Review</h2>
@@ -21,3 +20,4 @@
         <p>Review already submitted. You can <a href="{% url 'edit_review' review_id=book.id %}">edit your review</a> instead.</p>
     {%endif%}
 </form>
+{% endblock %}

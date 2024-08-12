@@ -12,6 +12,36 @@
 </head>
 
 <body class="bg-gray-100 font-sans">
+    {% comment %} for pop up {% endcomment %}
+    {% if messages %}
+        <ul id="message-list" class="messages" style="display: none;">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var messageList = document.getElementById('message-list');
+            if (messageList && messageList.children.length > 0) {
+                alert(messageList.textContent); // Display the message in an alert
+                messageList.style.display = 'none'; // Hide the message list after displaying
+            }
+
+            var logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default button action
+                    var userConfirmed = confirm("Do you want to log out?");
+                    if (userConfirmed) {
+                        window.location.href = "{% url 'logout' %}"; // Redirect to logout URL
+                    }
+                });
+            }
+        });
+    </script>
+    {% comment %} unitil here {% endcomment %}
 
     <div class="container mx-auto p-6">
         <!-- Search Bar -->        

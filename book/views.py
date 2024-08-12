@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 # from django import forms
 from django.shortcuts import render
 from django.db.models import Q
-from .forms import ReviewForm
 
 
 # Create your views here.
@@ -70,6 +69,9 @@ def user_login(request):
         if user is not None:
             login(request, user)
             return redirect('home')
+            
+                
+        
         else:
             messages.error(request, 'Invalid username or password')
             return redirect('login')
@@ -77,6 +79,7 @@ def user_login(request):
 
 def logout_view(request):
     logout(request)
+    messages.success(request, 'Log Out successful! .')
     return redirect('home')
 
 def add_review(request, id):
