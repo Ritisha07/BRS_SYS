@@ -1,15 +1,17 @@
-from django.shortcuts import render,redirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render,redirect, get_object_or_404
 from .models import Book, Review
 from django.contrib.auth import login, authenticate,logout
-from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+# from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django import forms
+# from django import forms
 from django.shortcuts import render
-from .models import Book
+from django.db.models import Q
+from .forms import ReviewForm
+
+
 # Create your views here.
 def home(request):
     popular_books = Book.objects.all()  # or apply some filter to get popular books
@@ -76,13 +78,7 @@ def user_login(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
-# def login(request):
-#     return render(request, "book/login.html",{})
 
-# class ReviewForm(forms.ModelForm):
-#     class Meta:
-#         model = Review
-#         fields = ('content',) 
 def add_review(request, id):
     book = get_object_or_404(Book, id=id)
     reviews = Review.objects.filter(book=book)
@@ -104,15 +100,32 @@ def add_review(request, id):
 
     return render(request, 'book/add_review.html', {'book': book, 'has_reviewed': has_reviewed})
 
+@login_required
+def edit_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    
+    # Check if the current user is the owner of the review
+    if review.user != request.user:
+        return redirect('some_error_page')  # Redirect or show an error if necessary
+    
+    if request.method == 'POST':
+        # Update review fields directly from POST data
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
 
+        if rating and comment:
+            review.rating = rating
+            review.comment = comment
+            review.save()
+            return redirect('book_details', id=review.book.id)
+    else:
+        # For GET requests, pass the review data to the template
+        context = {
+            'review': review,
+        }
+        return render(request, 'book/edit_review.html', context)
 
 # views.py
-
-
-from django.db.models import Q
-from django.shortcuts import render
-from .models import Book
-
 def search_books(request):
     query = request.GET.get('query', '')
     print(f"Search query: {query}")  # Debug line
@@ -133,34 +146,11 @@ def search_books(request):
     }
     return render(request, 'book/search_results.html', context)
 
-
-
-
 def book_detail(request, id):
     book = get_object_or_404(Book, id=id)
     reviews = Review.objects.filter(book=book)
     has_reviewed = reviews.filter(user=request.user).exists() if request.user.is_authenticated else False
     return render(request, 'book/book_detail.html', {'book': book, 'reviews': reviews, 'has_reviewed': has_reviewed})
-
-# def genre_fiction(request):
-#     # Logic for fiction genre
-#     return render(request, 'book/genre_fiction.html')
-
-# def genre_nonfiction(request):
-#     # Logic for non-fiction genre
-#     return render(request, 'book/genre_nonfiction.html')
-
-# def genre_sci_fi(request):
-#     return render(request, 'book/genre_sci_fi.html')
-
-# sworiya le gareko kk idk
-
-
-
-# def genreSearch(request, genre):
-#     # Filter books based on the genre parameter
-#     books = Book.objects.filter(genre=genre)
-#     return render(request, 'genreSearch.html', {'books': books, 'search_query': genre}) 
 
 def genre_search(request, genre):
     # Query books based on the genre
