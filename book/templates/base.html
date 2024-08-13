@@ -43,12 +43,20 @@
                         </svg>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="{% url 'genre_fiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fiction</a>
-                        <a href="{% url 'genre_nonfiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Non-Fiction</a>
-                        <a href="{% url 'genre_sci_fi' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Sci-Fi</a>
+                        <a href="{% url 'genre_search' genre='fantacy' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fantacy</a>
+                        <a href="{% url 'genre_search' genre='nonfictionfiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fiction</a>
+                        <a href="{% url 'genre_search' genre='thriller' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Thriller</a>
                         <!-- Add more genres as needed -->
                     </div>
                 </div>
+
+                {% if user.is_authenticated %}
+                <span class="text-white">Welcome, {{ user.username }}!</span>
+                    <button id="logout-btn" style="background-color: #d9534f; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
+                        <a href="{% url 'logout' %}" class="text-white">Logout</a>
+                    </button>
+                {% else %}
+                
                 <div class="relative dropdown">
                     <button class="text-white hover:text-gray-300 focus:outline-none">
                         Sign Up
@@ -57,13 +65,16 @@
                         </svg>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="{% url 'register' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Register</a>
+                        <p><a href="{% url 'register' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Register</a>
+                        </p>
                         <a href="{% url 'login' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Login</a>
                         
                     </div>
                 </div>
+                {% endif %}
                 {% comment %} {% if user.is_authenticated %} {% endcomment %}
-                <a href="{% url 'logout' %}"class="text-white hover:text-gray-300">Logout</a>
+                {% comment %} <button id="logout-btn">
+                <a href="{% url 'logout' %}"class="text-white hover:text-gray-300">Logout</a></button> {% endcomment %}
                 {% comment %} <a href="{% url 'login' %}" class="text-white hover:text-gray-300">SignIn</a> {% endcomment %}
             </div>
         </div>
@@ -81,5 +92,51 @@
     <footer class="bg-yellow-500 p-4 text-center text-white">
         &copy; 2024 BookRec. All rights reserved.
     </footer>
+    {% comment %} <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var messageList = document.getElementById('message-list');
+            if (messageList && messageList.children.length > 0) {
+                messageList.style.display = 'block'; // Show the message list
+
+                // Hide the message after 3 seconds
+                setTimeout(function() {
+                    messageList.style.opacity = 0; // Fade out
+                    setTimeout(function() {
+                        messageList.style.display = 'none'; // Remove from display
+                    }, 500); // Delay to allow fading
+                }, 3000); // Show message for 3 seconds
+            }
+
+            var logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    var userConfirmed = confirm("Do you want to log out?");
+                    if (userConfirmed) {
+                        window.location.href = "{% url 'logout' %}";
+                    }
+                });
+            }
+        });
+    </script> {% endcomment %}
+    <script>
+        // Logout confirmation
+        document.getElementById('logout-btn')?.addEventListener('click', function() {
+            if (confirm('Do you want to log out?')) {
+                // Perform logout by redirecting to the logout URL
+                window.location.href = '{% url "logout" %}';
+                
+                // Display success message
+                var message = document.getElementById('logout-message');
+                message.textContent = 'Log Out successful!';
+                message.classList.add('show');
+
+                // Hide message after 3 seconds
+                setTimeout(function() {
+                    message.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 </html>
