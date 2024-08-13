@@ -23,6 +23,7 @@
             border-radius: 0.25rem;
             width: 12rem;
         }
+        
     </style>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-100 text-gray-800">
@@ -92,33 +93,7 @@
     <footer class="bg-yellow-500 p-4 text-center text-white">
         &copy; 2024 BookRec. All rights reserved.
     </footer>
-    {% comment %} <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var messageList = document.getElementById('message-list');
-            if (messageList && messageList.children.length > 0) {
-                messageList.style.display = 'block'; // Show the message list
-
-                // Hide the message after 3 seconds
-                setTimeout(function() {
-                    messageList.style.opacity = 0; // Fade out
-                    setTimeout(function() {
-                        messageList.style.display = 'none'; // Remove from display
-                    }, 500); // Delay to allow fading
-                }, 3000); // Show message for 3 seconds
-            }
-
-            var logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    var userConfirmed = confirm("Do you want to log out?");
-                    if (userConfirmed) {
-                        window.location.href = "{% url 'logout' %}";
-                    }
-                });
-            }
-        });
-    </script> {% endcomment %}
+    
     <script>
         // Logout confirmation
         document.getElementById('logout-btn')?.addEventListener('click', function() {

@@ -14,11 +14,14 @@
 <body>
     
     <h2>{{ book.name }}</h2>
-    <img src="{{ book.cover_page.url }}" alt="Cover image">
-    {% comment %} <img src="{{ MEDIA_URL }}{{ book.cover_page.url }}" alt="Cover image"> {% endcomment %}
-    {% comment %} <img src="{{ book.cover_page.url }}" alt="Cover image"> {% endcomment %}
-    {% comment %} <img src="model.cover_page.url" alt="Cover image"> {% endcomment %}
+    {% if book.cover_image %}
+        <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150; height: 200px;">
+    {% else %}
+        <p>No cover page available.</p>
+    {% endif %}
 
+    {% comment %} <img src="{{ book.cover.image.jpg }}" alt="Cover image"> {% endcomment %}
+    
     <p><strong>Author:</strong> {{ book.author }}</p>
     <p><strong>Genre:</strong> {{ book.genre }}</p>
     <p><strong>Published Date:</strong> {{ book.published_date }}</p>
@@ -43,7 +46,7 @@
         {% if review.user == request.user %}
         <p>
             <button type="submit" style="background-color:#4cae4c; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
-              <a href="{% url 'edit_review' review_id=book.id %}" >Edit Review</a>
+              <a href="{% url 'edit_review' review_id=review.id%}" >Edit Review</a>
             </button>
           </p>
         {% endif %}
@@ -54,13 +57,12 @@
 {% if not has_reviewed %}
 {% if request.user.is_authenticated %}
     {% comment %} {% if not has_reviewed %} {% endcomment %}
-        <h3>Submit a Review</h3>
         <form action="{% url 'add_review' id=book.id %}" method="get">
             <button type="submit" style="background-color:#4cae4c; ; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
             Add Review</button>
         </form> 
     {% else %}
-    <p><a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a> to submit a review.</p>
+
   
     {% endif %}
 
