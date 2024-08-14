@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-{% comment %} {% load review_filters %} {% endcomment %}
-{% comment %} {% if has_reviewed %} {% endcomment %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,9 +10,13 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
-    
+
     <h2>{{ book.name }}</h2>
-    <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150; height: 200px;">
+    {% if book.cover_image %}
+        <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150px; height: 200px;">
+    {% else %}
+        <p>No cover page available.</p>
+    {% endif %}
     
     <p><strong>Author:</strong> {{ book.author }}</p>
     <p><strong>Genre:</strong> {{ book.genre }}</p>
@@ -23,47 +25,49 @@
     <p><strong>Description:</strong> {{ book.description }}</p>
 
     <h2>Reviews</h2>
-{% for review in reviews %}
-    <div class="review">
-        <p><strong>{{ review.user.username }}</strong></p>
-        <p>Rating: 
-            {% for i in "*****" %}
-                {% if forloop.counter0 < review.rating %}
-                    <span>&#x2605;</span>  <!-- filled star -->
-                {% else %}
-                    <span>&#x2606;</span>  <!-- empty star -->
-                {% endif %}
-            {% endfor %}
-        </p>
-        <p>{{ review.comment }}</p>
-        <p>Posted on: {{ review.created_at }}</p>
-        {% if review.user == request.user %}
-        <p>
-            <button type="submit" style="background-color:#4cae4c; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
-              <a href="{% url 'edit_review' review_id=book.id %}" >Edit Review</a>
-            </button>
-          </p>
-        {% endif %}
-    </div>
-{% empty %}
-    <p>No reviews yet.</p>
-{% endfor %}
-{% if not has_reviewed %}
-{% if request.user.is_authenticated %}
-    {% comment %} {% if not has_reviewed %} {% endcomment %}
-        <h3>Submit a Review</h3>
-        <form action="{% url 'add_review' id=book.id %}" method="get">
-            <button type="submit" style="background-color:#4cae4c; ; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
-            Add Review</button>
-        </form> 
-    {% else %}
-    <p><a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a> to submit a review.</p>
-  
-    {% endif %}
+    {% for review in reviews %}
+        <div class="review">
+            <p><strong>{{ review.user.username }}</strong></p>
+            <p style="opacity: 0.8;">Rating: 
+                {% for i in "*****" %}
+                    {% if forloop.counter0 < review.rating %}
+                        <span>&#x2605;</span>  <!-- filled star -->
+                    {% else %}
+                        <span>&#x2606;</span>  <!-- empty star -->
+                    {% endif %}
+                {% endfor %}
+            </p>
+            <p>{{ review.comment }}</p>
+            <p style="opacity: 0.8;">Posted on: {{ review.created_at }}</p>
+            {% if review.user == request.user %}
+                <p>
+                    <a href="{% url 'edit_review' review_id=review.id %}" style="background-color:#4cae4c; color: white; padding: 2px 2px; text-decoration: none; border-radius: 5px;">Edit Review</a>
+                </p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
 
-    {% if has_reviewed %}
-        <p>Review submitted. Thank you!</p>
-    {% endif %}
+    {% if request.user.is_authenticated %}
+        {% if not has_reviewed %}
+            <h2>Add Review</h2>
+            <form method="post" action="{% url 'add_review' id=book.id %}">
+                {% csrf_token %}
+                <label for="rating">Rating:</label>
+                <select id="rating" name="rating" required>
+                    <option value="1">&#x2605;</option>
+                    <option value="2">&#x2605;&#x2605;</option>
+                    <option value="3">&#x2605;&#x2605;&#x2605;</option>
+                    <option value="4">&#x2605;&#x2605;&#x2605;&#x2605;</option>
+                    <option value="5">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</option>
+                </select><br><br>
+                <label for="comment">Comment:</label>
+                <textarea id="comment" name="comment" rows="5" cols="30" required></textarea><br><br>
+                <button type="submit" style="display: block; padding: 10px; border: 2px ; border-radius: 4px; background-color:#FF4040; color: white; font-size: 16px; cursor: pointer; transition: background-color 0.3s, border-color 0.3s;">Submit</button>
+            </form>
+        
+        {% endif %}
     {% endif %}
     
 {% endblock %}

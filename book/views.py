@@ -82,6 +82,7 @@ def logout_view(request):
     messages.success(request, 'Log Out successful! .')
     return redirect('home')
 
+@login_required
 def add_review(request, id):
     book = get_object_or_404(Book, id=id)
     reviews = Review.objects.filter(book=book)
