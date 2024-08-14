@@ -12,11 +12,7 @@
 <body>
 
     <h2>{{ book.name }}</h2>
-    {% if book.cover_image %}
-        <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150px; height: 200px;">
-    {% else %}
-        <p>No cover page available.</p>
-    {% endif %}
+    <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150; height: 200px;">    
     
     <p><strong>Author:</strong> {{ book.author }}</p>
     <p><strong>Genre:</strong> {{ book.genre }}</p>
