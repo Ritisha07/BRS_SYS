@@ -6,14 +6,17 @@
         
         <label for="rating">Rating:</label>
         <select id="rating" name="rating" required>
-            {% for i in "12345" %}
-                <option value="{{ i }}" {% if i|stringformat:"s" == review.rating|stringformat:"s" %}selected{% endif %}>{{ i }}</option>
-            {% endfor %}
+            <option value="1">&#x2605;</option>
+            <option value="2">&#x2605;&#x2605;</option>
+            <option value="3">&#x2605;&#x2605;&#x2605;</option>
+            <option value="4">&#x2605;&#x2605;&#x2605;&#x2605;</option>
+            <option value="5">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</option>
         </select><br><br>
         
         <label for="comment">Comment:</label>
         <textarea id="comment" name="comment" rows="5" cols="30" required>{{ review.comment }}</textarea><br><br>
         
-        <button type="submit">Save Changes</button>
+        <button type="submit"style="display: block; padding: 10px; border: 2px ; border-radius: 4px; background-color:#FF4040;
+         color: white; font-size: 16px; cursor: pointer; transition: background-color 0.3s, border-color 0.3s;"> Save Changes</button>
     </form>
 {% endblock %}

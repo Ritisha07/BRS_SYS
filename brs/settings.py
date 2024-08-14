@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'book/media')
 
 SECRET_KEY = 'your-secret-key'
 DEBUG = True

@@ -24,10 +24,14 @@ urlpatterns = [
     # Book Details and Reviews
     path('book/<int:id>/book_detail', views.book_detail, name='book_details'),
     path('book/<int:id>/add_review/', views.add_review, name='add_review'),
+    # path('review/<int:review_id>/edit_review/', views.edit_review, name='edit_review'),
     path('review/<int:review_id>/edit_review/', views.edit_review, name='edit_review'),
 
     # Genre Search
     path('genre/<str:genre>/', views.genre_search, name='genre_search'),
+    
+    
+    
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
