@@ -14,11 +14,8 @@
 <body>
     
     <h2>{{ book.name }}</h2>
-    <img src="{{ book.cover_page.url }}" alt="Cover image">
-    {% comment %} <img src="{{ MEDIA_URL }}{{ book.cover_page.url }}" alt="Cover image"> {% endcomment %}
-    {% comment %} <img src="{{ book.cover_page.url }}" alt="Cover image"> {% endcomment %}
-    {% comment %} <img src="model.cover_page.url" alt="Cover image"> {% endcomment %}
-
+    <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150; height: 200px;">
+    
     <p><strong>Author:</strong> {{ book.author }}</p>
     <p><strong>Genre:</strong> {{ book.genre }}</p>
     <p><strong>Published Date:</strong> {{ book.published_date }}</p>
