@@ -50,7 +50,7 @@
                 <!-- rest of your code -->
 
                 <div class="content">
-                    <h2 class="text-2xl font-semibold mb-4 ring-amber-300">Search for Books</h2>
+                    <<h2 class="text-2xl font-semibold mb-4 ring-amber-300 text-white">Search for Books</h2>
                     <form action="{% url 'search_books' %}" method="get">
                         <input type="text" name="query" placeholder="Search by title, author, or genre"
                             class="border border-gray-300 p-2 rounded-lg w-full" />
@@ -62,7 +62,6 @@
             </div>
         </section>
 
-        <!-- Popular Books -->
         <div class="container mx-auto p-6">
             <!-- Popular Books -->
             <section>
@@ -86,7 +85,34 @@
                     {% endfor %}
                 </div>
             </section>
+
+    
         </div>
+           <!-- Inside home.html -->
+{% if recommendations %}
+<h2>Recommended Books</h2>
+<div class="recommended-books">
+    {% for book in recommendations %}
+        <div class="book">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="w-24 h-auto mb-4 mx-auto">
+            {% comment %} {% else %}
+                <img src="{% static 'default_cover_image.png' %}" alt="Default cover" class="w-24 h-auto mb-4 mx-auto"> {% endcomment %}
+            {% endif %}
+            <h3 class="text-xl font-bold mb-2">{{ book.title }}</h3>
+            <p class="text-gray-600 mb-2">{{ book.author }}</p>
+            <p class="text-gray-600 mb-2">{{ book.genre }}</p>
+            <p class="text-gray-700 mb-4">{{ book.description|slice:":100" }}...</p>
+            <p class="text-gray-600 mb-2">{{ book.published_date }}</p>
+            <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline">Read more</a>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No recommendations available.</p>
+{% endif %}
+
+
 
     </div>
 
@@ -95,3 +121,4 @@
 </body>
 
 </html>
+

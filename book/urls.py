@@ -30,7 +30,8 @@ urlpatterns = [
     # Genre Search
     path('genre/<str:genre>/', views.genre_search, name='genre_search'),
     
-    
+    # path('recommendations/', views.recommendations, name='recommendations'),
+
     
 ]
 if settings.DEBUG:

@@ -22,10 +22,5 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"Review by {self.user.username}"
-    
-# class ReviewForm(models.ModelForm):
-#     class Meta:
-#         model = Review
-#         fields = ('content',)  # Adjust the fields as needed
 
     

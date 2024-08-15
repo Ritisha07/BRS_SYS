@@ -1,20 +1,66 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from .models import Book, Review
 from django.contrib.auth import login, authenticate,logout
-# from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-# from django import forms
 from django.shortcuts import render
 from django.db.models import Q
+from django.db.models import Count
 
-
-# Create your views here.
 def home(request):
-    popular_books = Book.objects.all()  # or apply some filter to get popular books
-    return render(request, 'book/home.html', {'popular_books': popular_books})
+    # Get all popular books
+    popular_books = Book.objects.all()
+    
+    # Get recommendations if the user is authenticated
+    recommendations = get_recommendations(request.user) if request.user.is_authenticated else Book.objects.none()
+    
+    # Prepare context
+    context = {
+        'popular_books': popular_books,
+        'recommendations': recommendations,
+        # other context variables can be added here
+    }
+    
+    # Render the home template with the context
+    return render(request, 'book/home.html', context)
+
+def get_recommendations(user):
+    # Get books reviewed by the user
+    user_reviews = Review.objects.filter(user=user)
+    reviewed_books_ids = set(user_reviews.values_list('book_id', flat=True))
+    
+    # If the user has not reviewed any books, return no recommendations
+    if not reviewed_books_ids:
+        return Book.objects.none()
+
+    # Find other users who have reviewed the same books
+    similar_user_reviews = Review.objects.filter(
+        book_id__in=reviewed_books_ids
+    ).exclude(user=user)
+
+    # Collect book recommendations
+    recommended_books_ids = set()
+    for review in similar_user_reviews:
+        # Find books reviewed by this user that the user has not reviewed
+        other_user_reviews = Review.objects.filter(
+            user=review.user
+        ).exclude(book_id__in=reviewed_books_ids)
+        
+        for other_review in other_user_reviews:
+            recommended_books_ids.add(other_review.book_id)
+
+    # Filter out books already reviewed by the user
+    # recommended_books_ids.difference_update(reviewed_books_ids)
+    
+    # Retrieve books
+    recommended_books = Book.objects.filter(id__in=recommended_books_ids)
+
+    return recommended_books
+
+
+
 
 def about(request):
     return render(request,"book/about.html",{})
@@ -82,7 +128,6 @@ def logout_view(request):
     messages.success(request, 'Log Out successful! .')
     return redirect('home')
 
-@login_required
 def add_review(request, id):
     book = get_object_or_404(Book, id=id)
     reviews = Review.objects.filter(book=book)
@@ -154,7 +199,11 @@ def book_detail(request, id):
     book = get_object_or_404(Book, id=id)
     reviews = Review.objects.filter(book=book)
     has_reviewed = reviews.filter(user=request.user).exists() if request.user.is_authenticated else False
-    return render(request, 'book/book_detail.html', {'book': book, 'reviews': reviews, 'has_reviewed': has_reviewed})
+    if request.user.is_authenticated:
+        recommendations = get_recommendations(request.user)
+    else:
+        recommendations = None
+    return render(request, 'book/book_detail.html', {'book': book, 'reviews': reviews, 'has_reviewed': has_reviewed, 'recommendations': recommendations})
 
 def genre_search(request, genre):
     # Query books based on the genre
@@ -167,3 +216,4 @@ def genre_search(request, genre):
     }
     
     return render(request, 'book/genreSearch.html', context)
+
