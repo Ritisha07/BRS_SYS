@@ -91,14 +91,23 @@
            <!-- Inside home.html -->
 {% if recommendations %}
 <h2>Recommended Books</h2>
+<style>
+    .book-image-container {
+        display: block;
+        margin-bottom: 20px;
+    }
+</style>
 <div class="recommended-books">
     {% for book in recommendations %}
-        <div class="book">
+
+        <div class="book-image-container">
             {% if book.cover_image %}
-                <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="w-24 h-auto mb-4 mx-auto">
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="w-24 h-auto mb-4">
             {% comment %} {% else %}
                 <img src="{% static 'default_cover_image.png' %}" alt="Default cover" class="w-24 h-auto mb-4 mx-auto"> {% endcomment %}
             {% endif %}
+        </div>
+        <div class="book details">
             <h3 class="text-xl font-bold mb-2">{{ book.title }}</h3>
             <p class="text-gray-600 mb-2">{{ book.author }}</p>
             <p class="text-gray-600 mb-2">{{ book.genre }}</p>
