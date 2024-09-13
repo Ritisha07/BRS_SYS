@@ -19,6 +19,7 @@
     color: white; font-size: 16px; cursor: pointer; transition: background-color 0.3s, border-color 0.3s;">Submit</button>
       {% if has_reviewed %} 
         <p>Review already submitted. You can <a href="{% url 'edit_review' review_id=book.id %}">edit your review</a> instead.</p>
+        or <a href="{% url 'delete_review' review_id=book.id %}">delete your review</a> instead.</p>
     {%endif%}
 </form>
 {% endblock %}

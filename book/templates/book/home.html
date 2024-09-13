@@ -13,12 +13,19 @@
 
 <body class="bg-gray-100 font-sans">
     {% comment %} for pop up {% endcomment %}
-    {% if messages %}
+    {% comment %} {% if messages %}
         <ul id="message-list" class="messages" style="display: none;">
             {% for message in messages %}
                 <li class="{{ message.tags }}">{{ message }}</li>
             {% endfor %}
         </ul>
+    {% endif %} {% endcomment %}
+    {% if messages %}
+        <div style="position: fixed; top: 10px; right: 10px; padding: 10px; border-radius: 5px; background-color: #dff0d8; color: #3c763d;">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
     {% endif %}
     
     <script>
@@ -50,7 +57,7 @@
                 <!-- rest of your code -->
 
                 <div class="content">
-                    <<h2 class="text-2xl font-semibold mb-4 ring-amber-300 text-white">Search for Books</h2>
+                    <h2 class="text-2xl font-semibold mb-4 ring-amber-300 text-white">Search for Books</h2>
                     <form action="{% url 'search_books' %}" method="get">
                         <input type="text" name="query" placeholder="Search by title, author, or genre"
                             class="border border-gray-300 p-2 rounded-lg w-full" />
@@ -80,54 +87,108 @@
                         <p class="text-gray-700 mb-4">{{ book.description|slice:":100" }}...</p>
                         <p class="text-gray-600 mb-2">{{ book.published_date }}</p>
 
-                        <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline">Read more</a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </section>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline" style="flex: 1; text-align: left;">
+                         Read more
+                        </a>
+   
+                        </div>
+
+
+                        {% comment %} {% if request.user.is_authenticated %}
+                        <div>
+                        {% if request.user in book.favorites.all %}
+                        <form method="post" action="{% url 'remove_favorite' book.id %}">
+                        {% csrf_token %}
+                        <button type="submit" style="background-color: #FF4040; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                        Remove from Favorites
+                        </button>
+                        </form>
+                        {% else %}
+                        <form method="post" action="{% url 'add_favorite' book.id %}">
+                        {% csrf_token %}
+                        <button type="submit" style="background-color: #4cae4c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                        Add to Favorites
+                        </button>
+                        </form>
+                
+                    {% endif %}
+                </div> 
+                {% endif %}  {% endcomment %}
+
+            </div>
+            {% endfor %}
+        </div>
+        </section>
 
     
-        </div>
+    </div>
+    {% if request.user.is_authenticated %}
+    <div style="display: flex; justify-content: flex-start; align-items: center; padding: 10px;">
+    <a href="{% url 'favorite_books' %}" h1 style="font-weight: bold; font-size: 25px; color: green; border: 5px solid #FFD700; border-radius: 5px;padding: 10px; display: inline-block;">
+    
+        View Favorite Books
+    </a>
+    </div>
+    {% endif %} 
+
+        
            <!-- Inside home.html -->
+        
 {% if recommendations %}
-<h2>Recommended Books</h2>
+<h2 class="heading">Recommended Books</h2>
 <style>
+    .heading {
+        font-weight: bold; /* Makes the heading text bold */
+        margin-bottom: 20px; /* Adds space below the heading */
+    }
     .book-image-container {
         display: block;
         margin-bottom: 20px;
     }
+    .book-details-container {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    .book-image {
+        width: 96px; /* Adjust as needed */
+        height: auto;
+        margin-bottom: 16px;
+    }
+    .book-details {
+        font-size: 1rem;
+        color: #4a4a4a;
+    }
 </style>
 <div class="recommended-books">
     {% for book in recommendations %}
-
-        <div class="book-image-container">
-            {% if book.cover_image %}
-            <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="w-24 h-auto mb-4">
-            {% comment %} {% else %}
-                <img src="{% static 'default_cover_image.png' %}" alt="Default cover" class="w-24 h-auto mb-4 mx-auto"> {% endcomment %}
-            {% endif %}
+        <div class="book-details-container">
+            <div class="book-image-container">
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-image">
+                {% else %}
+                    <img src="{% static 'default_cover_image.png' %}" alt="Default cover" class="book-image">
+                {% endif %}
+            </div>
+            <div class="book-details">
+                <h3 class="text-xl font-bold mb-2">{{ book.title }}</h3>
+                <p class="text-gray-600 mb-2">{{ book.author }}</p>
+                <p class="text-gray-600 mb-2">{{ book.genre }}</p>
+                <p class="text-gray-700 mb-4">{{ book.description|slice:":100" }}...</p>
+                <p class="text-gray-600 mb-2">{{ book.published_date }}</p>
+                <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline">Read more</a>
+            </div>
         </div>
-        <div class="book details">
-            <h3 class="text-xl font-bold mb-2">{{ book.title }}</h3>
-            <p class="text-gray-600 mb-2">{{ book.author }}</p>
-            <p class="text-gray-600 mb-2">{{ book.genre }}</p>
-            <p class="text-gray-700 mb-4">{{ book.description|slice:":100" }}...</p>
-            <p class="text-gray-600 mb-2">{{ book.published_date }}</p>
-            <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline">Read more</a>
-        </div>
+    {% empty %}
+        <p>No recommendations available.</p>
     {% endfor %}
 </div>
-{% else %}
-<p>No recommendations available.</p>
+
+
 {% endif %}
-
-
-
-    </div>
-
     {% endblock %}
 
 </body>
-
 </html>
 

@@ -7,14 +7,10 @@ urlpatterns = [
     # Home and About
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
+    
 
     # Search
     path('search/', views.search_books, name='search_books'),
-
-    # Genre URLs
-    # path('genre/fiction/', views.genre_fiction, name='genre_fiction'),
-    # path('genre/nonfiction/', views.genre_nonfiction, name='genre_nonfiction'),
-    # path('genre/sci-fi/', views.genre_sci_fi, name='genre_sci_fi'),
 
     # Authentication
     path('SignIn/register/', views.register, name='register'),
@@ -26,9 +22,17 @@ urlpatterns = [
     path('book/<int:id>/add_review/', views.add_review, name='add_review'),
     # path('review/<int:review_id>/edit_review/', views.edit_review, name='edit_review'),
     path('review/<int:review_id>/edit_review/', views.edit_review, name='edit_review'),
+    path('review/delete/<int:review_id>/', views.delete_review, name='delete_review'),
+    path('book/buy/<int:id>/', views.buy_book, name='buy_book'),
 
     # Genre Search
     path('genre/<str:genre>/', views.genre_search, name='genre_search'),
+    
+    path('book/<int:id>/', views.book_detail, name='book_detail'), 
+    path('favorites/', views.favorite_books, name='favorite_books'),
+    path('book/<int:id>/add_favorite/', views.add_favorite, name='add_favorite'),
+    path('book/<int:id>/remove_favorite/', views.remove_favorite, name='remove_favorite'),
+
     
     # path('recommendations/', views.recommendations, name='recommendations'),
 

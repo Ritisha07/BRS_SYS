@@ -12,28 +12,47 @@
 <body>
 
     <h2>{{ book.name }}</h2>
-    {% if book.cover_image %}
-        <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150px; height: 200px;">
-    {% else %}
-        <p>No cover page available.</p>
-    {% endif %}
-    
+    <img src="{{ book.cover_image.url }}" alt="Cover Page" style="max-width: 150px; height: 200px;">    
+
     <p><strong>Author:</strong> {{ book.author }}</p>
     <p><strong>Genre:</strong> {{ book.genre }}</p>
     <p><strong>Published Date:</strong> {{ book.published_date }}</p>
     <p><strong>Price:</strong> {{ book.price }}</p>
     <p><strong>Description:</strong> {{ book.description }}</p>
 
+    <p><a href="{% url 'buy_book' id=book.id %}" style="background-color: #4cae4c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Buy Book</a></p>
+    <section>
+    {% if request.user.is_authenticated %}
+                        <div>
+                        {% if request.user in book.favorites.all %}
+                        <form method="post" action="{% url 'remove_favorite' book.id %}">
+                        {% csrf_token %}
+                        <button type="submit" style="background-color: #FF4040; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                        Remove from Favorites
+                        </button>
+                        </form>
+                        {% else %}
+                        <form method="post" action="{% url 'add_favorite' book.id %}">
+                        {% csrf_token %}
+                        <button type="submit" style="background-color: #4cae4c; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                        Add to Favorites
+                        </button>
+                        </form>
+                
+                    {% endif %}
+                </div> 
+                {% endif %} 
+    </section>
     <h2>Reviews</h2>
     {% for review in reviews %}
-        <div class="review">
+        <div class="review" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
             <p><strong>{{ review.user.username }}</strong></p>
             <p style="opacity: 0.8;">Rating: 
                 {% for i in "*****" %}
                     {% if forloop.counter0 < review.rating %}
-                        <span>&#x2605;</span>  <!-- filled star -->
+                        <span style="color: gold;">&#x2605;</span>  <!-- filled star -->
                     {% else %}
-                        <span>&#x2606;</span>  <!-- empty star -->
+                        <span style="color: gray;">&#x2606;</span>  <!-- empty star -->
                     {% endif %}
                 {% endfor %}
             </p>
@@ -41,7 +60,8 @@
             <p style="opacity: 0.8;">Posted on: {{ review.created_at }}</p>
             {% if review.user == request.user %}
                 <p>
-                    <a href="{% url 'edit_review' review_id=review.id %}" style="background-color:#4cae4c; color: white; padding: 2px 2px; text-decoration: none; border-radius: 5px;">Edit Review</a>
+                    <a href="{% url 'edit_review' review_id=review.id %}" style="background-color: #4cae4c; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px; margin-right: 5px;">Edit Review</a>
+                    <a href="{% url 'delete_review' review_id=review.id %}" style="background-color: #FF4040; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Delete Review</a>
                 </p>
             {% endif %}
         </div>
@@ -55,7 +75,7 @@
             <form method="post" action="{% url 'add_review' id=book.id %}">
                 {% csrf_token %}
                 <label for="rating">Rating:</label>
-                <select id="rating" name="rating" required>
+                <select id="rating" name="rating" required style="padding: 5px; border-radius: 4px;">
                     <option value="1">&#x2605;</option>
                     <option value="2">&#x2605;&#x2605;</option>
                     <option value="3">&#x2605;&#x2605;&#x2605;</option>
@@ -63,10 +83,11 @@
                     <option value="5">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</option>
                 </select><br><br>
                 <label for="comment">Comment:</label>
-                <textarea id="comment" name="comment" rows="5" cols="30" required></textarea><br><br>
-                <button type="submit" style="display: block; padding: 10px; border: 2px ; border-radius: 4px; background-color:#FF4040; color: white; font-size: 16px; cursor: pointer; transition: background-color 0.3s, border-color 0.3s;">Submit</button>
+                <textarea id="comment" name="comment" rows="5" cols="30" required style="padding: 5px; border-radius: 4px;"></textarea><br><br>
+                <button type="submit" style="background-color: #FF4040; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                    Submit
+                </button>
             </form>
-        
         {% endif %}
     {% endif %}
     

@@ -6,11 +6,11 @@
         
         <label for="rating">Rating:</label>
         <select id="rating" name="rating" required>
-            <option value="1">&#x2605;</option>
-            <option value="2">&#x2605;&#x2605;</option>
-            <option value="3">&#x2605;&#x2605;&#x2605;</option>
-            <option value="4">&#x2605;&#x2605;&#x2605;&#x2605;</option>
-            <option value="5">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</option>
+            <option value="1" {% if review.rating == 1 %}selected{% endif %}>&#x2605;</option>
+            <option value="2" {% if review.rating == 2 %}selected{% endif %}>&#x2605;&#x2605;</option>
+            <option value="3" {% if review.rating == 3 %}selected{% endif %}>&#x2605;&#x2605;&#x2605;</option>
+            <option value="4" {% if review.rating == 4 %}selected{% endif %}>&#x2605;&#x2605;&#x2605;&#x2605;</option>
+            <option value="5" {% if review.rating == 5 %}selected{% endif %}>&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</option>
         </select><br><br>
         
         <label for="comment">Comment:</label>

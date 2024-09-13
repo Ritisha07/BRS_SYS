@@ -27,6 +27,13 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-100 text-gray-800">
+    {% if messages %}
+        <div style="position: fixed; top: 10px; right: 10px; padding: 10px; border-radius: 5px; background-color: #dff0d8; color: #3c763d;">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
     <!-- Navigation Bar -->
     <nav class="bg-yellow-500 p-4">
         <div class="container mx-auto flex justify-between items-center">
@@ -45,8 +52,11 @@
                     </button>
                     <div class="dropdown-menu">
                         <a href="{% url 'genre_search' genre='fantacy' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fantacy</a>
-                        <a href="{% url 'genre_search' genre='nonfictionfiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fiction</a>
+                        <a href="{% url 'genre_search' genre='fiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fiction</a>
+                        <a href="{% url 'genre_search' genre='romance' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Romance</a>
                         <a href="{% url 'genre_search' genre='thriller' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Thriller</a>
+                        <a href="{% url 'genre_search' genre='novel' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Novel</a>
+
                         <!-- Add more genres as needed -->
                     </div>
                 </div>
