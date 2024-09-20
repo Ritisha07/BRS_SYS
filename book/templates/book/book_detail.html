@@ -19,6 +19,7 @@
     <p><strong>Published Date:</strong> {{ book.published_date }}</p>
     <p><strong>Price:</strong> {{ book.price }}</p>
     <p><strong>Description:</strong> {{ book.description }}</p>
+    
 
     <p><a href="{% url 'buy_book' id=book.id %}" style="background-color: #4cae4c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Buy Book</a></p>
     <section>

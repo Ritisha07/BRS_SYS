@@ -27,14 +27,33 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-100 text-gray-800">
-    {% if messages %}
+    {% comment %} {% if messages %}
         <div style="position: fixed; top: 10px; right: 10px; padding: 10px; border-radius: 5px; background-color: #dff0d8; color: #3c763d;">
             {% for message in messages %}
                 <p>{{ message }}</p>
             {% endfor %}
         </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
+    {% if messages %}
+    <div id="message-box" style="position: fixed; top: 0; left: 0; right: 0; padding: 15px; background-color: #dff0d8; color: #3c763d; text-align: center; z-index: 1000;">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+
+    <!-- JavaScript to hide the message after a few seconds -->
+    <script>
+        setTimeout(function() {
+            var messageBox = document.getElementById('message-box');
+            if (messageBox) {
+                messageBox.style.display = 'none';
+            }
+        }, 2000);  // Hide after 5 seconds (5000 milliseconds)
+    </script>
+{% endif %}
+
     <!-- Navigation Bar -->
+     
     <nav class="bg-yellow-500 p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-4">
@@ -42,6 +61,7 @@
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{% url 'home' %}" class="text-white hover:text-gray-300">Home</a>
+                {% comment %} <a href="{% url 'ask_favorites' %}">Set Your Favorites</a> {% endcomment %}
                 <a href="{% url 'about' %}" class="text-white hover:text-gray-300">About Us</a>
                 <div class="relative dropdown">
                     <button class="text-white hover:text-gray-300 focus:outline-none">
@@ -51,7 +71,7 @@
                         </svg>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="{% url 'genre_search' genre='fantacy' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fantacy</a>
+                        <a href="{% url 'genre_search' genre='fantasy' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fantasy</a>
                         <a href="{% url 'genre_search' genre='fiction' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Fiction</a>
                         <a href="{% url 'genre_search' genre='romance' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Romance</a>
                         <a href="{% url 'genre_search' genre='thriller' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Thriller</a>

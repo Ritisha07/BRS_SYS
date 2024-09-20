@@ -1,0 +1,25 @@
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <h1>Help us get to know you better!</h1>
+    <p>We'd love to know your favorite book genre and author.</p>
+    
+    <label for="favorite_genre">Favorite Genre:</label>
+    <select id="favorite_genre" name="favorite_genre">
+        <option value="">None</option>
+        {% for genre in genres %}
+            <option value="{{ genre }}">{{ genre }}</option>
+        {% endfor %}
+    </select><br><br>
+    
+    <label for="favorite_author">Favorite Author:</label>
+    <select id="favorite_author" name="favorite_author">
+        <option value="">None</option>
+        {% for author in authors %}
+            <option value="{{ author }}">{{ author }}</option>
+        {% endfor %}
+    </select><br><br>
+    
+    <button type="submit">Submit and Get Recommendations</button>
+</form>
+{% endblock %}

@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
+from .models import UserProfile
 
 def home(request):
     # Get all popular books
@@ -23,6 +24,9 @@ def home(request):
     
     # Render the home template with the context
     return render(request, 'book/home.html', context)
+
+def about(request):
+    return render(request, "book/about.html", {})
 
 # def get_recommendations(user):
 #     # Get books reviewed by the user
@@ -63,60 +67,6 @@ def home(request):
 # def about(request):
 #     return render(request,"book/about.html",{})
 
-def get_recommendations(user):
-    # Get the user's reviews and the books they've reviewed
-    user_reviews = Review.objects.filter(user=user)
-    reviewed_books_ids = set(user_reviews.values_list('book_id', flat=True))
-
-    # If the user has not reviewed any books, return no recommendations
-    if not reviewed_books_ids:
-        return Book.objects.none()
-
-    # Find other users who have reviewed the same books as the current user
-    similar_user_reviews = Review.objects.filter(
-        book_id__in=reviewed_books_ids
-    ).exclude(user=user)
-
-    # Collect book recommendations based on reviews by similar users
-    recommended_books_ids = set()
-    for review in similar_user_reviews:
-        # Find books reviewed by similar users that the current user has not reviewed
-        other_user_reviews = Review.objects.filter(
-            user=review.user
-        ).exclude(book_id__in=reviewed_books_ids)
-
-        # Add these books to the recommended list
-        recommended_books_ids.update(other_user_reviews.values_list('book_id', flat=True))
-
-    # Get the recommended books, excluding those the user already reviewed
-    recommended_books = Book.objects.filter(id__in=recommended_books_ids)
-
-    return recommended_books
-def about(request):
-    return render(request, "book/about.html", {})
-
-
-def register(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        
-        if password1 == password2:
-            if User.objects.filter(username=username).exists():
-                messages.error(request, 'Username already exists')
-            elif User.objects.filter(email=email).exists():
-                messages.error(request, 'Email already exists')
-            else:
-                user = User.objects.create_user(username=username, email=email, password=password1)
-                user.save()
-                login(request, user)
-                return redirect('home')
-        else:
-            messages.error(request, 'Passwords do not match')
-    return render(request, 'book/register.html')
-
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -138,21 +88,46 @@ def register(request):
             messages.error(request, 'Passwords do not match')
     return render(request, 'book/register.html')
 
+# def user_login(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             login(request, user)
+#             return redirect('home') 
+#         else:
+#             messages.error(request, 'Invalid username or password')
+#             return redirect('login')
+#     return render(request, 'book/login.html')
 def user_login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             login(request, user)
-            return redirect('home')
+
+            # Ensure the user has a profile (use get_or_create to avoid errors)
+            profile, created = UserProfile.objects.get_or_create(user=user)
             
-                
-        
+            # Check if the user's favorite genre and author are set
+            if not profile.favorite_genre or not profile.favorite_author:
+                # Redirect to the page where the user provides favorite genre and author
+                return redirect('ask_favorites')
+
+            # If the user has set both the favorite genre and author, redirect to home
+            return redirect('home')
         else:
+            # Display an error message if authentication fails
             messages.error(request, 'Invalid username or password')
             return redirect('login')
+    
+    # Render the login page for GET request
     return render(request, 'book/login.html')
+    
+
 
 def logout_view(request):
     logout(request)
@@ -302,21 +277,68 @@ def remove_favorite(request, id):
     messages.success(request, 'Book removed from favorites!')
     return redirect('home' )
     
-# @login_required
-# def favorite_books(request):
-#     # Get the books that the user has added to their favorites
-#     favorite_books = Book.objects.filter(favorites=request.user)
-    
-#     context = {
-#         'favorite_books': favorite_books,
-#     }
-    
-#     return render(request, 'book/favorite_books.html', context)
+@login_required
+def ask_favorites(request):
+    if request.method == 'POST':
+        favorite_genre = request.POST.get('favorite_genre')
+        favorite_author = request.POST.get('favorite_author')
 
+        # Ensure the user has a UserProfile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        profile.favorite_genre = favorite_genre
+        profile.favorite_author = favorite_author
+        profile.save()
 
-    
-    
+        return redirect('home')
 
-    
-    
+    # Get all unique genres and authors from books for the dropdown
+    genres = Book.objects.values_list('genre', flat=True).distinct()
+    authors = Book.objects.values_list('author', flat=True).distinct()
 
+    return render(request, 'book/ask_favorites.html', {'genres': genres, 'authors': authors})
+
+def get_recommendations(user):
+    try:
+        profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        return Book.objects.none()  # Return empty if no profile exists
+
+    user_reviews = Review.objects.filter(user=user)
+    reviewed_books_ids = set(user_reviews.values_list('book_id', flat=True))
+
+    favorite_books = Book.objects.filter(favorites=user)
+    favorite_books_ids = set(favorite_books.values_list('id', flat=True))
+
+    favorite_genres = favorite_books.values_list('genre', flat=True)
+    favorite_authors = favorite_books.values_list('author', flat=True)
+
+    # Collaborative filtering: Find books based on similar users
+    similar_user_reviews = Review.objects.filter(
+        Q(book_id__in=reviewed_books_ids) | Q(book_id__in=favorite_books_ids)
+    ).exclude(user=user)
+
+    recommended_books_ids = set()
+    for review in similar_user_reviews:
+        other_user_reviews = Review.objects.filter(
+            user=review.user
+        ).exclude(Q(book_id__in=reviewed_books_ids) | Q(book_id__in=favorite_books_ids))
+        
+        for other_review in other_user_reviews:
+            recommended_books_ids.add(other_review.book_id)
+
+    # Content-based filtering: Recommend books of the same genre and author as favorites
+    same_genre_author_books = Book.objects.filter(
+        Q(genre__in=favorite_genres) | Q(author__in=favorite_authors)
+    ).exclude(Q(id__in=reviewed_books_ids) | Q(id__in=favorite_books_ids))
+
+    # Add the profile's favorite genre and author
+    recommended_books = Book.objects.filter(
+        Q(id__in=recommended_books_ids) |  # Based on similar users
+        Q(genre=profile.favorite_genre) |  # Favorite genre from profile
+        Q(author=profile.favorite_author)  # Favorite author from profile
+    ).exclude(Q(id__in=reviewed_books_ids) | Q(id__in=favorite_books_ids))
+
+    # Combine the two querysets (collaborative + content-based)
+    recommended_books = recommended_books | same_genre_author_books
+
+    return recommended_books
