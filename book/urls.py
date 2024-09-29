@@ -36,6 +36,7 @@ urlpatterns = [
     path('book/<int:id>/remove_favorite/', views.remove_favorite, name='remove_favorite'),
     path('ask_favorites/', views.ask_favorites, name='ask_favorites'),
     
+    path('profile/', views.user_profile, name='user_profile'),
     
 #     path('book/', include('book.urls')),
  ]

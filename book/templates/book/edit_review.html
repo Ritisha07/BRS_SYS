@@ -1,4 +1,63 @@
 {% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h1 class="font-bold text-3xl">Edit Review</h1>
+<form method="post" action="{% url 'edit_review' review.id %}">
+    {% csrf_token %}
+    <div class="mb-6">
+        <label for="rating" class="block text-lg font-medium text-gray-700">Rating:</label>
+        <div id="star-rating" class="flex items-center space-x-2 mt-2">
+            <!-- Stars -->
+            {% for i in "12345" %}
+                <span class="star text-2xl cursor-pointer 
+                    {% if i|add:0 < review.rating %} text-yellow-500 {% else %} text-gray-400 {% endif %}" 
+                    data-value="{{ i }}">
+                    &#9733;
+                </span>
+            {% endfor %}
+        </div>
+        <input type="hidden" name="rating" id="rating" value="{{ review.rating }}">
+    </div>
+    
+    <div class="mb-6">
+        <label for="comment" class="block text-lg font-medium text-gray-700">Comment:</label>
+        <textarea id="comment" name="comment" rows="3" cols="55"
+                  class=" border border-gray-300 p-3 rounded-lg 
+                  focus:ring-yellow-500 focus:border-yellow-500 shadow-sm" 
+                  placeholder="Write your comment here">{{ review.comment }}</textarea>
+    </div>
+    
+    <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-200">Update Review</button>
+</form>
+
+<!-- JavaScript for Star Rating -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                ratingInput.value = index + 1;
+
+                stars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.classList.add('text-yellow-500');
+                        s.classList.remove('text-gray-400');
+                    } else {
+                        s.classList.add('text-gray-400');
+                        s.classList.remove('text-yellow-500');
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+{% endblock %}
+
+{% comment %} {% extends "base.html" %}
 {% block content %}
     <h1>Edit Review</h1>
     <form method="post">
@@ -19,4 +78,4 @@
         <button type="submit"style="display: block; padding: 10px; border: 2px ; border-radius: 4px; background-color:#FF4040;
          color: white; font-size: 16px; cursor: pointer; transition: background-color 0.3s, border-color 0.3s;"> Save Changes</button>
     </form>
-{% endblock %}
+{% endblock %} {% endcomment %}

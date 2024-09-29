@@ -12,22 +12,7 @@
 </head>
 
 <body class="bg-gray-100 font-sans">
-    {% comment %} for pop up {% endcomment %}
-    {% comment %} {% if messages %}
-        <ul id="message-list" class="messages" style="display: none;">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %} {% endcomment %}
-    {% comment %} {% if messages %}
-        <div style="position: fixed; top: 10px; right: 10px; padding: 10px; border-radius: 5px; background-color: #dff0d8; color: #3c763d;">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endif %} {% endcomment %}
-    
+       
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -71,6 +56,33 @@
         </section>
 
         <div class="container mx-auto p-6">
+            <!-- Inside home.html -->
+        
+           {% if recommendations %}
+           <h2 class="text-2xl font-bold mb-6">Recommended Books</h2>
+           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+               {% for book in recommendations %}
+                   <div class="bg-white shadow-md rounded-lg p-4 flex flex-col items-center"> <!-- Added items-center -->
+                       <div class="book-image-container mb-4 flex-grow flex justify-center"> <!-- Added flex and justify-center -->
+                           {% if book.cover_image %}
+                               <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="w-32 h-48 object-cover rounded-lg"> 
+                           {% else %}
+                               <img src="{% static 'default_cover_image.png' %}" alt="Default cover" class="w-32 h-48 object-cover rounded-lg">
+                           {% endif %}
+                       </div>
+                       <h3 class="text-lg font-bold mb-2 text-center">{{ book.title }}</h3> <!-- Added text-center -->
+                       <p class="text-gray-600 mb-1 text-center">{{ book.author }}</p> <!-- Added text-center -->
+                       <p class="text-gray-600 mb-1 text-center">{{ book.genre }}</p> <!-- Added text-center -->
+                       <p class="text-gray-700 mb-4 text-center">{{ book.description|slice:":100" }}...</p> <!-- Added text-center -->
+                       <p class="text-gray-600 mb-2 text-center">{{ book.published_date }}</p> <!-- Added text-center -->
+                       <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline">Read more</a>
+                   </div>
+               {% empty %}
+                   <p>No recommendations available.</p>
+               {% endfor %}
+           </div>
+           {% endif %}
+           
             <!-- Popular Books -->
             <section>
                 <h2 class="text-2xl font-semibold mb-4">Popular Books</h2>
@@ -125,69 +137,14 @@
     
     </div>
     {% if request.user.is_authenticated %}
-    <div style="display: flex; justify-content: flex-start; align-items: center; padding: 10px;">
+    {% comment %} <div style="display: flex; justify-content: flex-start; align-items: center; padding: 10px;">
     <a href="{% url 'favorite_books' %}" h1 style="font-weight: bold; font-size: 25px; color: green; border: 5px solid #FFD700; border-radius: 5px;padding: 10px; display: inline-block;">
     
         View Favorite Books
     </a>
-    </div>
-    {% endif %} 
-
-        
-           <!-- Inside home.html -->
-        
-{% if recommendations %}
-<h2 class="heading">Recommended Books</h2>
-<style>
-    .heading {
-        font-weight: bold; /* Makes the heading text bold */
-        margin-bottom: 20px; /* Adds space below the heading */
-    }
-    .book-image-container {
-        display: block;
-        margin-bottom: 20px;
-    }
-    .book-details-container {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 20px;
-    }
-    .book-image {
-        width: 96px; /* Adjust as needed */
-        height: auto;
-        margin-bottom: 16px;
-    }
-    .book-details {
-        font-size: 1rem;
-        color: #4a4a4a;
-    }
-</style>
-<div class="recommended-books">
-    {% for book in recommendations %}
-        <div class="book-details-container">
-            <div class="book-image-container">
-                {% if book.cover_image %}
-                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-image">
-                {% else %}
-                    <img src="{% static 'default_cover_image.png' %}" alt="Default cover" class="book-image">
-                {% endif %}
-            </div>
-            <div class="book-details">
-                <h3 class="text-xl font-bold mb-2">{{ book.title }}</h3>
-                <p class="text-gray-600 mb-2">{{ book.author }}</p>
-                <p class="text-gray-600 mb-2">{{ book.genre }}</p>
-                <p class="text-gray-700 mb-4">{{ book.description|slice:":100" }}...</p>
-                <p class="text-gray-600 mb-2">{{ book.published_date }}</p>
-                <a href="{% url 'book_details' book.id %}" class="text-blue-600 hover:underline">Read more</a>
-            </div>
-        </div>
-    {% empty %}
-        <p>No recommendations available.</p>
-    {% endfor %}
+    </div> {% endcomment %}
+    {% endif %}     
 </div>
-
-
-{% endif %}
     {% endblock %}
 
 </body>

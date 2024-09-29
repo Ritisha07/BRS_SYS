@@ -88,18 +88,6 @@ def register(request):
             messages.error(request, 'Passwords do not match')
     return render(request, 'book/register.html')
 
-# def user_login(request):
-#     if request.method == 'POST':
-#         username = request.POST['username']
-#         password = request.POST['password']
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request, user)
-#             return redirect('home') 
-#         else:
-#             messages.error(request, 'Invalid username or password')
-#             return redirect('login')
-#     return render(request, 'book/login.html')
 def user_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -134,45 +122,82 @@ def logout_view(request):
     messages.success(request, 'Log Out successful! .')
     return redirect('home')
 
+# def add_review(request, id):
+#     book = get_object_or_404(Book, id=id)
+#     reviews = Review.objects.filter(book=book)
+#     has_reviewed = reviews.filter(user=request.user).exists() if request.user.is_authenticated else False
+
+#     if request.method == 'POST':
+#         if request.user.is_authenticated:
+#             rating = request.POST.get('rating')
+#             comment = request.POST.get('comment')
+#             if not has_reviewed:
+#                 review = Review(book=book, user=request.user, rating=rating, comment=comment)
+#                 review.save()
+#                 return redirect('book_details', id=book.id)
+#             else:
+#                 # Handle the case where user has already reviewed the book
+#                 return redirect('book_details', id=book.id)
+#         else:
+#             return redirect('login')
+
+#     return render(request, 'book/add_review.html', {'book': book, 'has_reviewed': has_reviewed})
+
+
 def add_review(request, id):
     book = get_object_or_404(Book, id=id)
-    reviews = Review.objects.filter(book=book)
-    has_reviewed = reviews.filter(user=request.user).exists() if request.user.is_authenticated else False
+    has_reviewed = Review.objects.filter(book=book, user=request.user).exists() if request.user.is_authenticated else False
 
     if request.method == 'POST':
         if request.user.is_authenticated:
-            rating = request.POST.get('rating')
-            comment = request.POST.get('comment')
+            rating = request.POST.get('rating', '')
+            comment = request.POST.get('comment', '')  # Comment can be optional
+
+            # If the user has not reviewed this book yet
             if not has_reviewed:
-                review = Review(book=book, user=request.user, rating=rating, comment=comment)
-                review.save()
+                # Create the review only if rating is provided
+                if rating:
+                    # Ensure the rating is a valid number
+                    if rating.isdigit():
+                        rating = int(rating)
+                    else:
+                        rating = 0  # Default to 0 if rating is not a valid number
+                    # Create the review
+                    review = Review(book=book, user=request.user, rating=rating, comment=comment)
+                    review.save()
+                # Redirect to book details regardless of whether a comment was provided
                 return redirect('book_details', id=book.id)
             else:
-                # Handle the case where user has already reviewed the book
+                # User has already reviewed the book
                 return redirect('book_details', id=book.id)
         else:
             return redirect('login')
 
     return render(request, 'book/add_review.html', {'book': book, 'has_reviewed': has_reviewed})
 
+
 @login_required
 def edit_review(request, review_id):
     review = get_object_or_404(Review, id=review_id)
-    
+
     # Check if the current user is the owner of the review
     if review.user != request.user:
         return redirect('some_error_page')  # Redirect or show an error if necessary
     
     if request.method == 'POST':
         # Update review fields directly from POST data
-        rating = request.POST.get('rating')
-        comment = request.POST.get('comment')
+        rating = request.POST.get('rating', None)  # Use None as default if not provided
+        comment = request.POST.get('comment', None)
 
-        if rating and comment:
+        # Update only if rating and/or comment are provided
+        if rating is not None:
             review.rating = rating
+        if comment is not None:
             review.comment = comment
-            review.save()
-            return redirect('book_details', id=review.book.id)
+            
+        review.save()
+        return redirect('book_details', id=review.book.id)
+    
     else:
         # For GET requests, pass the review data to the template
         context = {
@@ -342,3 +367,38 @@ def get_recommendations(user):
     recommended_books = recommended_books | same_genre_author_books
 
     return recommended_books
+
+def create_new_user(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        # Creating a new user
+        new_user = User.objects.create_user(username=username, password=password)
+
+        # Check if the profile is created
+        new_profile = UserProfile.objects.get(user=new_user)
+        print(new_profile)  # Should print the username of the new user
+
+        return redirect('home')  # Redirect after creation
+
+    return render(request, 'create_user.html')
+
+@login_required
+def user_profile(request):
+    # Get the logged-in user's profile
+    profile = UserProfile.objects.get(user=request.user)
+    
+    # Get the list of books reviewed by the user
+    reviews = Review.objects.filter(user=request.user)
+
+    context = {
+        'profile': profile,
+        'reviews': reviews
+    }
+
+    return render(request, 'book/user_profile.html', context)
+
+def some_view(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    # Your logic here...
